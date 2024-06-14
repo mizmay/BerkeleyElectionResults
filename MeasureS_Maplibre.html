@@ -41,21 +41,33 @@
                                 type: "raster",
                                 url: "pmtiles://" + PMTILES_URL,
                                 attribution: '© Stephanie May <edit this before publishing>'
+                            },
+                            "precincts": {
+                                type: "geojson",
+                                data: "https://mizmay.github.io/BerkeleyElectionResults/PrecinctsVotes.geojson"
                             }
                         },
                         layers: [
                             {
-                                'id': 'just-tiles',
-                                'type': 'raster',
-                                'source': 'berkeley_election',
-                                'minzoom': 13,
-                                'maxzoom': 16
+                                "id": "just-tiles",
+                                "type": "raster",
+                                "source": "berkeley_election",
+                                "minzoom": 13,
+                                "maxzoom": 16
+                            },
+                            {
+                                "id":"precincts",
+                                "type":"fill",
+                                "source":"precincts",
+                                "layout": { "visibility": "none"},
+                                "paint": {"fill-color": "#ff0000" /* debug value */}
                             }
                         ]
                     }
                 });
                 //map.showTileBoundaries = true;
-            })
+
+                })
         </script>
     </body>
 </html>

@@ -32,7 +32,7 @@
             p.getHeader().then(h => {
                 const map = new maplibregl.Map({
                     container: 'map',
-                    zoom: h.maxZoom-3,
+                    zoom: h.minZoom,
                     center: [h.centerLon, h.centerLat],
                     style: {
                         version:8,
@@ -40,7 +40,8 @@
                             "berkeley_election": {
                                 type: "raster",
                                 url: "pmtiles://" + PMTILES_URL,
-                                attribution: '© Stephanie May <edit this before publishing>'
+                                attribution: '© Stephanie May <edit this before publishing>',
+                                tileSize: 256
                             },
                             "precincts": {
                                 type: "geojson",
@@ -66,7 +67,6 @@
                     }
                 });
                 //map.showTileBoundaries = true;
-
                 })
         </script>
     </body>

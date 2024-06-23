@@ -17,6 +17,9 @@
     <body>
         <div id="map"></div>
         <script type="text/javascript">
+
+            let hoveredStateId = null;
+
             // add the PMTiles plugin to the maplibregl global.
             let protocol = new pmtiles.Protocol();
             maplibregl.addProtocol("pmtiles",protocol.tile);
@@ -45,7 +48,8 @@
                             },
                             "precincts": {
                                 type: "geojson",
-                                data: "https://mizmay.github.io/BerkeleyElectionResults/PrecinctsVotes.geojson"
+                                data: "https://mizmay.github.io/BerkeleyElectionResults/PrecinctsVotes.geojson",
+                                promoteId:"Precinct"
                             }
                         },
                         layers: [
@@ -60,14 +64,39 @@
                                 "id":"precincts",
                                 "type":"fill",
                                 "source":"precincts",
-                                "layout": { "visibility": "none"},
-                                "paint": {"fill-color": "#ff0000" /* debug value */}
+                                "paint": {  'fill-color': 'black',
+                                            'fill-opacity': [ 'case', ['boolean', ['feature-state', 'hover'], false],.1,0]}
                             }
                         ]
                     }
                 });
-                //map.showTileBoundaries = true;
-                })
+
+                map.on('mousemove', 'precincts', (e) => {
+                    if (e.features.length > 0) {
+                        if (hoveredStateId) {
+                            map.setFeatureState(
+                                {source: 'precincts', id: hoveredStateId},
+                                {hover: false}
+                            );
+                        }
+                        hoveredStateId = e.features[0].properties.Precinct;
+                        map.setFeatureState(
+                            {source: 'precincts', id: hoveredStateId},
+                            {hover: true}
+                        );
+                    }
+                });
+
+                map.on('mouseleave', 'precincts', () => {
+                    if (hoveredStateId) {
+                        map.setFeatureState(
+                            {source: 'precincts', id: hoveredStateId},
+                            {hover: false}
+                        );
+                    }
+                hoveredStateId = null;
+                });
+            });
         </script>
     </body>
 </html>

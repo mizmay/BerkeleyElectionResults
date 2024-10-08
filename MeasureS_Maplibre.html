@@ -21,15 +21,15 @@
             let hoveredStateId = null;
 
             // add the PMTiles plugin to the maplibregl global.
-            let protocol = new pmtiles.Protocol();
-            maplibregl.addProtocol("pmtiles",protocol.tile);
+            let pm = new pmtiles.Protocol();
+            maplibregl.addProtocol("pmtiles",pm.tile);
 
             let PMTILES_URL = "https://mizmay.github.io/BerkeleyElectionResults/ElectionBerkeleyMeasureS.pmtiles";
 
             const p = new pmtiles.PMTiles(PMTILES_URL);
 
             // this is so we share one instance across the JS code and the map renderer
-            protocol.add(p);
+            pm.add(p);
 
             // we first fetch the header so we can get the center lon, lat of the map.
             p.getHeader().then(h => {
@@ -43,7 +43,7 @@
                             "berkeley_election": {
                                 type: "raster",
                                 url: "pmtiles://" + PMTILES_URL,
-                                attribution: '© Stephanie May <edit this before publishing>',
+                                attribution: '© Stephanie May',
                                 tileSize: 256
                             },
                             "precincts": {

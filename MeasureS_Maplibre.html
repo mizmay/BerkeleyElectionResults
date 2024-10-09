@@ -12,6 +12,16 @@
             #map {
                 height:100%; width:100%;
             }
+            .maplibregl-popup > * {
+                border-radius: 6px;
+                opacity: 0.75;
+            }
+            .maplibregl-popup-content > * {
+                /* make popup content denser */
+                margin: 0;
+                padding: 0;
+                width: 180px;
+            }
         </style>
     </head>
     <body>
@@ -35,7 +45,7 @@
             p.getHeader().then(h => {
                 const map = new maplibregl.Map({
                     container: 'map',
-                    zoom: h.minZoom-01,
+                    zoom: h.minZoom-1,
                     center: [h.centerLon, h.centerLat],
                     style: {
                         version:8,
@@ -62,7 +72,7 @@
                                 "id":"precincts",
                                 "type":"fill",
                                 "source":"precincts",
-                                "paint": {  'fill-color': 'black',
+                                "paint": {  'fill-color': 'orange',
                                             'fill-opacity': [ 'case', ['boolean', ['feature-state', 'hover'], false],.1,0]}
                             }
                         ]
@@ -93,6 +103,36 @@
                         );
                     }
                 hoveredStateId = null;
+                });
+
+                map.on('click', (event) => {
+                    // of all possible features under the cursor, filter to just the precincts
+                    let features = map.queryRenderedFeatures(event.point)
+                        .filter(feature => feature.layer.source === "precincts");
+
+                    if (features.length === 0) {
+                        // no precincts found under cursor
+                        return;
+                    }
+
+                    let feature = features[0];
+
+                    if (feature.properties.sample_siz <= 0.0) {
+                        // no data for this precinct
+                        return;
+                    }
+
+                    // create a popup, set its map position and html content, and add it to the map
+                    let popup = new maplibregl.Popup({ closeButton: false });
+                    popup.setLngLat(event.lngLat);
+                    popup.setHTML(`
+                        <p>
+                            Of the <b>${feature.properties.t_BallotsC}</b> ballots cast in this precinct, 
+                            <b>${feature.properties.t_MSVoted}</b> voted on Measure S. <b>${feature.properties.t_MEASSYES}</b> 
+                            voted YES and <b>${feature.properties.t_MEASSNO}</b> voted NO.
+                        </p>
+                    `);
+                    popup.addTo(map);
                 });
             });
         </script>
